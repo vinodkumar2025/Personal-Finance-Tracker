@@ -1,1 +1,31 @@
-<p>dashboard works!</p>
+<div class="dashboard">
+  <div class="summary-cards">
+    <mat-card class="summary-card income">
+      <h3>Income</h3>
+      <p>{{ income | currency }}</p>
+    </mat-card>
+    <mat-card class="summary-card expense">
+      <h3>Expenses</h3>
+      <p>{{ expense | currency }}</p>
+    </mat-card>
+    <mat-card class="summary-card savings">
+      <h3>Savings</h3>
+      <p>{{ balance | currency }}</p>
+    </mat-card>
+  </div>
+
+  <mat-card class="chart-card">
+    <h3>Monthly Spending</h3>
+    <canvas baseChart
+      [data]="pieChartData"
+      [labels]="pieChartLabels"
+      [chartType]="'doughnut'">
+    </canvas>
+  </mat-card>
+
+  <div class="action-button">
+    <button mat-raised-button color="primary" routerLink="/transactions">
+      Add Transaction
+    </button>
+  </div>
+</div>

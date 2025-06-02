@@ -1,3 +1,31 @@
-.sidenav-container {
+:host {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
+}
+
+app-top-navbar {
+  flex: 0 0 auto;
+}
+
+.main-layout {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+}
+
+.sidenav-container {
+  flex: 1 1 auto;
+  height: 100%;
+}
+
+mat-sidenav {
+  background-color: #20626B;
+  color: #fff;
+  border-radius: unset;
+}
+
+.main-content {
+  background: #f5f7fa;
+  min-height: 100%;
 }
