@@ -4,50 +4,90 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     MatCardModule,
     MatButtonModule,
     RouterLink,
+    BaseChartDirective, // Required for ng2-charts
   ],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent {
- income = 0;
+  income = 0;
   expense = 0;
   balance = 0;
 
-  pieChartLabels: string[] = [];
-  pieChartData: number[] = [];
+  // Doughnut Chart Configuration
+  public doughnutChartType: ChartType = 'doughnut';
+  public doughnutChartData!: ChartData<'doughnut'>;
+  public doughnutChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'left' },
+      labels: {
+        font: {
+          size: 14 // Set your desired font size here
+        }
+      }
+    }as any,
+  };
 
   constructor(private transactionService: TransactionService) {}
 
   ngOnInit(): void {
     const transactions = this.transactionService.getAll();
 
+    // Calculate income, expense, balance
     this.income = transactions
-      .filter(txn => txn.type === 'income')
+      .filter((txn) => txn.type === 'income')
       .reduce((acc, curr) => acc + curr.amount, 0);
 
     this.expense = transactions
-      .filter(txn => txn.type === 'expense')
+      .filter((txn) => txn.type === 'expense')
       .reduce((acc, curr) => acc + curr.amount, 0);
 
     this.balance = this.income - this.expense;
 
-    // Pie chart data
-    const categoryTotals: { [key: string]: number } = {};
+    // Prepare chart data
+    const categoryTotals: Record<string, number> = {};
     transactions
-      .filter(txn => txn.type === 'expense')
-      .forEach(txn => {
+      .filter((txn) => txn.type === 'expense')
+      .forEach((txn) => {
         categoryTotals[txn.category] = (categoryTotals[txn.category] || 0) + txn.amount;
       });
 
-    this.pieChartLabels = Object.keys(categoryTotals);
-    this.pieChartData = Object.values(categoryTotals);
+    this.doughnutChartData = {
+      labels: Object.keys(categoryTotals),
+      datasets: [
+        {
+          data: Object.values(categoryTotals),
+          backgroundColor: [
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#4BC0C0',
+            '#9966FF',
+            '#FF9F40',
+          ],
+          hoverBackgroundColor: [
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#4BC0C0',
+            '#9966FF',
+            '#FF9F40',
+          ],
+        },
+      ],
+    };
   }
 }

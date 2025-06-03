@@ -16,11 +16,14 @@
 
   <mat-card class="chart-card">
     <h3>Monthly Spending</h3>
-    <canvas baseChart
-      [data]="pieChartData"
-      [labels]="pieChartLabels"
-      [chartType]="'doughnut'">
-    </canvas>
+    <div class="chart-container">
+      <canvas
+        baseChart
+        [type]="doughnutChartType"
+        [data]="doughnutChartData"
+        [options]="doughnutChartOptions"
+      ></canvas>
+    </div>
   </mat-card>
 
   <div class="action-button">
