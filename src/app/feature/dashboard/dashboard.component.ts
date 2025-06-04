@@ -32,12 +32,7 @@ export class DashboardComponent {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'left' },
-      labels: {
-        font: {
-          size: 14 // Set your desired font size here
-        }
-      }
+      legend: { position: 'left', labels: { font: { size: 16 } } },
     }as any,
   };
 

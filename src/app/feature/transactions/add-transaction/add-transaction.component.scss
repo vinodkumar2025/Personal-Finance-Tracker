@@ -1,0 +1,40 @@
+.transaction-card {
+  max-width: 600px;
+  margin: 1.5rem auto;
+  padding: 1.5rem;
+
+  mat-card-header {
+    margin-bottom: 1rem;
+    
+    mat-card-title {
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+  }
+
+  .form-row {
+    margin-bottom: 1rem;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    button[mat-raised-button] {
+      padding: 0.5rem 2rem;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .transaction-card {
+    margin: 1rem;
+    padding: 1rem;
+  }
+}
