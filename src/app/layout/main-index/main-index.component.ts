@@ -16,5 +16,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
   styleUrl: './main-index.component.scss'
 })
 export class MainIndexComponent {
-
+  isSidebarOpen: boolean = true;
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  } 
 }

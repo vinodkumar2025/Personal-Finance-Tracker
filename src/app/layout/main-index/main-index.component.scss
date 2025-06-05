@@ -28,3 +28,10 @@ mat-sidenav {
 .main-content {
   background: #f5f7fa;
 }
+
+@media (max-width: 762px) {
+  mat-sidenav {
+    width: 100%;
+    position: fixed;
+  }
+}

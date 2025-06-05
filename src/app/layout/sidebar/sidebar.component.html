@@ -1,28 +1,34 @@
 <mat-nav-list>
+  <p class="menu-title">
+    <span class="app-title">Personal Finance Tracker</span>
+    <button mat-icon-button (click)="toggleSidebar()" aria-label="Toggle Sidebar">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </p>
 
   <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
     <mat-icon>dashboard</mat-icon>
-    <span>Dashboard</span>
+    <span class="app-title">Dashboard</span>
   </a>
 
   <a mat-list-item routerLink="/transactions" routerLinkActive="active-link">
     <mat-icon>receipt_long</mat-icon>
-    <span>Transactions</span>
+    <span class="app-title">Transactions</span>
   </a>
 
   <a mat-list-item routerLink="/reports" routerLinkActive="active-link">
     <mat-icon>bar_chart</mat-icon>
-    <span>Reports</span>
+    <span class="app-title">Reports</span>
   </a>
 
   <a mat-list-item routerLink="/categories" routerLinkActive="active-link">
     <mat-icon>category</mat-icon>
-    <span>Categories</span>
+    <span class="app-title">Categories</span>
   </a>
 
   <a mat-list-item routerLink="/settings" routerLinkActive="active-link">
     <mat-icon>settings</mat-icon>
-    <span>Settings</span>
+    <span class="app-title">Settings</span>
   </a>
 
 </mat-nav-list>

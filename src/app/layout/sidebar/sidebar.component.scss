@@ -7,3 +7,25 @@ a.mat-list-item {
   background-color: rgba(0, 0, 0, 0.1);
   font-weight: bold;
 }
+
+.menu-title {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.app-title {
+  font-size: 1.2rem;
+  font-family: 'Roboto', sans-serif;
+  color: white;
+}
+
+.clickable-icon {
+  cursor: pointer;
+}
+
+mat-icon{
+  color: gainsboro;;
+}

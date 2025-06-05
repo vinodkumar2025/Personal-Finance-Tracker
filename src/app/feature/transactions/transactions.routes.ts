@@ -12,5 +12,10 @@ export const TRANSACTIONS_ROUTES: Routes = [
         path: 'add',
         component: AddTransactionComponent,
         title: 'Add Transaction'
+      },
+      {
+        path: 'edit/:id',
+        component: AddTransactionComponent, 
+        title: 'Edit Transaction'
       }
 ];

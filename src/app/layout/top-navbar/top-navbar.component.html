@@ -1,5 +1,9 @@
 <mat-toolbar color="primary" class="top-navbar">
-  <span class="app-title">Personal Finance Tracker</span>
+  @if(isSidebarClose) {
+    <button mat-icon-button (click)="toggleSidebar()" aria-label="Open Sidebar">
+      <mat-icon>menu</mat-icon>
+    </button>
+  }
   <span class="spacer"></span>
   <button mat-icon-button aria-label="Notifications">
     <mat-icon>notifications</mat-icon>

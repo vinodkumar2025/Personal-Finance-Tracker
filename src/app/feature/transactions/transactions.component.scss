@@ -16,3 +16,19 @@
   color: red;
   font-weight: 600;
 }
+
+@media (max-width: 768px) {
+  .transaction-table-wrapper {
+    overflow-x: auto;
+  }
+}
+
+.action-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    button {
+      padding: 0.5rem 2rem;
+      font-size: 1rem;
+    }
+  }
