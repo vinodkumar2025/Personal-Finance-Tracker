@@ -1,0 +1,87 @@
+.reports-container {
+  padding: 16px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.date-range-picker {
+  margin-right: 16px;
+  width: 250px;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.summary-card {
+  text-align: center;
+  .amount {
+    font-size: 24px;
+    font-weight: bold;
+    &.income {
+      color: #4CAF50; // Green
+    }
+    &.expense {
+      color: #F44336; // Red
+    }
+    &.savings {
+      color: #2196F3; // Blue
+    }
+  }
+}
+
+.charts-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+  .chart-wrapper {
+    background: white;
+    padding: 16px;
+    border-radius: 4px;
+    box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+    h3 {
+      margin-top: 0;
+    }
+  }
+}
+
+.table-container {
+  margin: 16px 0;
+  .filter-field {
+    width: 100%;
+  }
+}
+
+.insights-card {
+  margin-top: 16px;
+  mat-icon {
+    color: #FFC107; // Amber
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+}
+
+.income {
+  color: #4CAF50;
+}
+
+.expense {
+  color: #F44336;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .charts-container {
+    grid-template-columns: 1fr;
+  }
+}
