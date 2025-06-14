@@ -33,20 +33,6 @@ export class TransactionsComponent {
     this.transactions = this.transactionService.getAll();
   }
 
-  addDummy(): void {
-    const newTxn: Transaction = {
-      id: crypto.randomUUID(),
-      title: 'Test Income',
-      amount: 1000,
-      type: 'income',
-      date: new Date().toISOString().split('T')[0],
-      category: 'Salary'
-    };
-
-    this.transactionService.add(newTxn);
-    console.log('Dummy transaction added.');
-  }
-
   deleteTransaction(id: string): void {
     this.transactionService.delete(id);
     this.transactions = this.transactionService.getAll();

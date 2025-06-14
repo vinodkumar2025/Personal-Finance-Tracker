@@ -19,10 +19,18 @@
 }
 
 .summary-card {
-  align-items: center;
+  text-align: center;
+  padding: 16px;
+  
+  mat-card-header {
+    justify-content: center;
+    padding-bottom: 16px;
+  }
+  
   .amount {
     font-size: 24px;
     font-weight: bold;
+    
     &.income {
       color: #4CAF50; // Green
     }
@@ -40,39 +48,65 @@
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 16px;
   margin: 16px 0;
+  
   .chart-wrapper {
     background: white;
     padding: 16px;
     border-radius: 4px;
-    box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+    box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 
+                0 1px 1px 0 rgba(0,0,0,.14), 
+                0 1px 3px 0 rgba(0,0,0,.12);
+    
     h3 {
       margin-top: 0;
+      margin-bottom: 16px;
+      color: rgba(0, 0, 0, 0.87);
     }
   }
 }
 
 .table-container {
   margin: 16px 0;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 
+              0 1px 1px 0 rgba(0,0,0,.14), 
+              0 1px 3px 0 rgba(0,0,0,.12);
+  
+  h3 {
+    padding: 16px 16px 0;
+    margin: 0;
+    color: rgba(0, 0, 0, 0.87);
+  }
+  
   .filter-field {
     width: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
   }
-}
-
-.insights-card {
-  margin-top: 16px;
-  mat-icon {
-    color: #FFC107; // Amber
-    vertical-align: middle;
-    margin-right: 8px;
+  
+  table {
+    width: 100%;
+    
+    .mat-mdc-header-row {
+      background-color: #f5f5f5;
+    }
+    
+    .income {
+      color: #4CAF50;
+      font-weight: 500;
+    }
+    
+    .expense {
+      color: #F44336;
+      font-weight: 500;
+    }
   }
-}
-
-.income {
-  color: #4CAF50;
-}
-
-.expense {
-  color: #F44336;
+  
+  mat-paginator {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
 }
 
 /* Responsive adjustments */
@@ -83,5 +117,31 @@
   
   .charts-container {
     grid-template-columns: 1fr;
+    
+    .chart-wrapper {
+      padding: 16px 8px;
+    }
+  }
+  
+  .date-range-picker {
+    width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reports-container {
+    padding: 8px;
+  }
+  
+  mat-toolbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 8px 0;
+    
+    .date-range-picker {
+      order: 1;
+      width: 100%;
+      margin: 8px 0 0 0;
+    }
   }
 }

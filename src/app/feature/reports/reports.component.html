@@ -7,7 +7,7 @@
       <mat-label>Date range</mat-label>
       <mat-date-range-input [rangePicker]="picker">
         <input matStartDate placeholder="Start date" [(ngModel)]="dateRange.start">
-        <input matEndDate placeholder="End date" [(ngModel)]="dateRange.end">
+        <input matEndDate placeholder="End date" [(ngModel)]="dateRange.end" (dateChange)="onDateRangeChange()">
       </mat-date-range-input>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-date-range-picker #picker></mat-date-range-picker>
@@ -24,7 +24,7 @@
         <mat-card-title>Total Income</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="amount income">{{ totalIncome | currency }}</div>
+        <div class="amount income">{{ totalIncome | currency:'INR':'symbol':'1.0-0' }}</div>
       </mat-card-content>
     </mat-card>
 
@@ -33,7 +33,7 @@
         <mat-card-title>Total Expenses</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="amount expense">{{ totalExpenses | currency }}</div>
+        <div class="amount expense">{{ totalExpenses | currency:'INR':'symbol':'1.0-0' }}</div>
       </mat-card-content>
     </mat-card>
 
@@ -42,7 +42,7 @@
         <mat-card-title>Net Savings</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="amount savings">{{ netSavings | currency }}</div>
+        <div class="amount savings">{{ netSavings | currency:'INR':'symbol':'1.0-0' }}</div>
       </mat-card-content>
     </mat-card>
   </div>
@@ -54,17 +54,23 @@
       <canvas baseChart 
         [type]="'line'"
         [data]="lineChartData"
-        [options]="lineChartOptions">
+        [options]="lineChartOptions"
+        #lineChart>
       </canvas>
     </div>
 
     <div class="chart-wrapper">
       <h3>Category Breakdown</h3>
-      <canvas baseChart 
-        [type]="'pie'"
-        [data]="pieChartData"
-        [options]="pieChartOptions">
-      </canvas>
+      @if (pieChartData.labels?.length) {
+        <canvas baseChart 
+          [type]="'pie'"
+          [data]="pieChartData"
+          [options]="pieChartOptions"
+          #pieChart>
+        </canvas>
+      } @else {
+        <div class="no-data-message">No expense data in selected range</div>
+      }
     </div>
   </div>
 
@@ -77,9 +83,15 @@
     </mat-form-field>
     
     <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+      <!-- Table columns remain the same -->
       <ng-container matColumnDef="date">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-        <td mat-cell *matCellDef="let element">{{ element.date | date }}</td>
+        <td mat-cell *matCellDef="let element">{{ element.date | date:'mediumDate' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+        <td mat-cell *matCellDef="let element">{{ element.title }}</td>
       </ng-container>
 
       <ng-container matColumnDef="category">
@@ -87,23 +99,18 @@
         <td mat-cell *matCellDef="let element">{{ element.category }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-        <td mat-cell *matCellDef="let element">{{ element.description }}</td>
-      </ng-container>
-
       <ng-container matColumnDef="amount">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
         <td mat-cell *matCellDef="let element" 
-            [class.income]="element.amount > 0" 
-            [class.expense]="element.amount < 0">
-          {{ element.amount | currency }}
+            [class.income]="element.type === 'income'" 
+            [class.expense]="element.type === 'expense'">
+          ₹{{ element.amount | number }}
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="paymentMethod">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Method</th>
-        <td mat-cell *matCellDef="let element">{{ element.paymentMethod }}</td>
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+        <td mat-cell *matCellDef="let element">{{ element.type | titlecase }}</td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -112,17 +119,4 @@
 
     <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
   </div>
-
-  <!-- Insights Section -->
-  <mat-card class="insights-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>lightbulb</mat-icon>
-        Insights & Recommendations
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>{{ currentInsight }}</p>
-    </mat-card-content>
-  </mat-card>
 </div>

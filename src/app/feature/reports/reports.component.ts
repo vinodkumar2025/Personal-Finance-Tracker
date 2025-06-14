@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -14,7 +14,9 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { Chart, ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { TransactionService } from '../../services/transaction.service';
+import { Transaction } from '../../services/transaction.service';
 
 @Component({
   selector: 'app-reports',
@@ -37,7 +39,7 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
     DatePipe,
     CurrencyPipe
   ],
-  providers: [provideNativeDateAdapter()], // Add this provider
+  providers: [provideNativeDateAdapter()],
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss']
 })
@@ -49,40 +51,37 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   };
 
   // Summary Data
-  totalIncome = 20000;
-  totalExpenses = 15000;
-  netSavings = 5000;
+  totalIncome = 0;
+  totalExpenses = 0;
+  netSavings = 0;
 
   // Transaction Table
-  displayedColumns: string[] = ['date', 'category', 'description', 'amount', 'paymentMethod'];
-  transactions = [
-    { date: new Date('2023-01-05'), category: 'Salary', description: 'Monthly salary', amount: 5000, paymentMethod: 'Direct Deposit' },
-    { date: new Date('2023-01-10'), category: 'Rent', description: 'Apartment rent', amount: -1200, paymentMethod: 'Bank Transfer' },
-    { date: new Date('2023-01-15'), category: 'Groceries', description: 'Supermarket', amount: -350, paymentMethod: 'Credit Card' },
-    { date: new Date('2023-01-20'), category: 'Freelance', description: 'Website project', amount: 2000, paymentMethod: 'PayPal' },
-    { date: new Date('2023-01-25'), category: 'Utilities', description: 'Electric bill', amount: -150, paymentMethod: 'Bank Transfer' },
-  ];
-  dataSource = new MatTableDataSource(this.transactions);
+  displayedColumns: string[] = ['date', 'title', 'category', 'amount', 'type'];
+  allTransactions: Transaction[] = [];
+  filteredTransactions: Transaction[] = [];
+  dataSource = new MatTableDataSource<Transaction>(this.filteredTransactions);
   
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('lineChart') lineChart?: BaseChartDirective;
+  @ViewChild('pieChart') pieChart?: BaseChartDirective;
 
   // Charts
-  public lineChartData: ChartConfiguration['data'] = {
+  public lineChartData: ChartConfiguration<'line'>['data'] = {
     datasets: [
       {
-        data: [65, 59, 80, 81, 56, 55, 40],
+        data: [],
         label: 'Spending',
-        backgroundColor: 'rgba(148,159,177,0.2)',
-        borderColor: 'rgba(148,159,177,1)',
-        pointBackgroundColor: 'rgba(148,159,177,1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+        pointHoverBorderColor: 'rgba(255, 99, 132, 0.8)',
         fill: 'origin',
       }
     ],
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July']
+    labels: []
   };
 
   public lineChartOptions: ChartConfiguration['options'] = {
@@ -92,17 +91,11 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     }
   };
 
-  public pieChartData: ChartData<'pie', number[], string | string[]> = {
-    labels: ['Rent', 'Groceries', 'Utilities', 'Entertainment', 'Transport'],
+  public pieChartData: ChartData<'pie'> = {
+    labels: [],
     datasets: [{
-      data: [1200, 350, 150, 200, 100],
-      backgroundColor: [
-        '#FF6384',
-        '#36A2EB',
-        '#FFCE56',
-        '#4BC0C0',
-        '#9966FF'
-      ]
+      data: [],
+      backgroundColor: []
     }]
   };
 
@@ -116,18 +109,141 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     }
   };
 
-  public pieChartType: ChartType = 'pie';
-
-  // Insights
-  currentInsight = "Review your utility expenses. They've increased by 15% compared to last month.";
+  constructor(
+    private transactionService: TransactionService,
+    private cdRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    debugger
+    this.loadTransactions();
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+  }
+
+  loadTransactions() {
+    this.allTransactions = this.transactionService.getAll();
+    this.filterByDateRange();
+  }
+
+  filterByDateRange() {
+    this.filteredTransactions = this.allTransactions.filter(transaction => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate >= this.dateRange.start && 
+             transactionDate <= this.dateRange.end;
+    });
+
+    this.dataSource.data = this.filteredTransactions;
+    this.calculateSummary();
+    this.prepareCharts();
+    this.cdRef.detectChanges();
+  }
+
+  updateCharts() {
+    setTimeout(() => {
+      if (this.lineChart?.chart) {
+        this.lineChart.chart.update();
+      }
+      
+      if (this.pieChart?.chart) {
+        // Complete recreation of pie chart for reliable updates
+        const ctx = this.pieChart.ctx as unknown as CanvasRenderingContext2D;
+        const config = {
+          type: 'pie',
+          data: this.pieChartData,
+          options: this.pieChartOptions
+        };
+        this.pieChart.chart = new (Chart as any)(ctx, config);
+      }
+    });
+  }
+
+  onDateRangeChange() {
+    this.filterByDateRange();
+  }
+
+  calculateSummary() {
+    this.totalIncome = this.filteredTransactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+    
+    this.totalExpenses = this.filteredTransactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0);
+    
+    this.netSavings = this.totalIncome - this.totalExpenses;
+  }
+
+  prepareCharts() {
+    // Create new objects to force change detection
+    const newLineData = {...this.lineChartData};
+    const newPieData = {...this.pieChartData};
+
+    // Reset data
+    newLineData.datasets[0].data = [];
+    newLineData.labels = [];
+    newPieData.labels = [];
+    newPieData.datasets[0].data = [];
+    newPieData.datasets[0].backgroundColor = [];
+
+    if (this.filteredTransactions.length > 0) {
+      // Line chart data
+      const dailyData = this.groupTransactionsByDay();
+      newLineData.labels = dailyData.map(d => d.label);
+      newLineData.datasets[0].data = dailyData.map(d => d.amount);
+
+      // Pie chart data
+      const categoryData = this.groupExpensesByCategory();
+      newPieData.labels = categoryData.map(c => c.category);
+      newPieData.datasets[0].data = categoryData.map(c => c.amount);
+      newPieData.datasets[0].backgroundColor = this.generateColors(categoryData.length);
+    }
+
+    // Assign new data
+    this.lineChartData = newLineData;
+    this.pieChartData = newPieData;
+    this.updateCharts();
+  }
+
+  groupTransactionsByDay(): { label: string; amount: number }[] {
+    const result = new Map<string, number>();
+    
+    this.filteredTransactions
+      .filter(t => t.type === 'expense')
+      .forEach(t => {
+        const dateStr = new Date(t.date).toLocaleDateString();
+        result.set(dateStr, (result.get(dateStr) || 0) + t.amount);
+      });
+
+    return Array.from(result.entries()).map(([dateStr, amount]) => ({
+      label: new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      amount
+    })).sort((a, b) => new Date(a.label).getTime() - new Date(b.label).getTime());
+  }
+
+  groupExpensesByCategory(): { category: string; amount: number }[] {
+    const result = new Map<string, number>();
+    
+    this.filteredTransactions
+      .filter(t => t.type === 'expense')
+      .forEach(t => {
+        result.set(t.category, (result.get(t.category) || 0) + t.amount);
+      });
+
+    return Array.from(result.entries()).map(([category, amount]) => ({
+      category,
+      amount
+    }));
+  }
+
+  generateColors(count: number): string[] {
+    const colors = [
+      '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+      '#FF9F40', '#8AC24A', '#EA5F89', '#00ACC1', '#FF5722'
+    ];
+    return colors.slice(0, count);
   }
 
   applyFilter(event: Event) {
@@ -137,6 +253,5 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   exportData() {
     console.log('Exporting data for date range:', this.dateRange);
-    // Implement actual export functionality here
   }
 }
